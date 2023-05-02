@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Stripe Checkout Sample</title>
+
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', path='css/normalize.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', path='css/global.css')}}"
+    />
+    <script src="https://js.stripe.com/v3/"></script>
+  </head>
+
+  <body>
+    <h2>Cart</h2>
+    <h3>Total: {{ total }}</h3>
+    <form action="/create-checkout-session-new?cart={{cart.id}}" method="POST">
+      <button id="submit">Checkout</button>
+    </form>
+    {% for cartitem in cart.cartitems %}
+    <h3>title: {{cartitem.item.title}}</h3>
+    <p>artist: {{cartitem.item.artist}}</p>
+    <p>description: {{cartitem.item.description}}</p>
+    <p>quantity: {{cartitem.quantity}}</p>
+    <form
+      action="/add-to-cart-refresh?cart_id={{ cartitem.cart_id }}&item_id={{ cartitem.item_id }}"
+      method="POST"
+    >
+      <button id="submit">Add</button>
+    </form>
+    <form
+      action="/add-to-cart-refresh?cart_id={{ cartitem.cart_id }}&item_id={{ cartitem.item_id }}&remove=true"
+      method="POST"
+    >
+      <button id="submit">Remove</button>
+    </form>
+    <br />
+    {% endfor %}
+    <div class="sr-root">
+      <div class="sr-main">
+        {% for product in products %}
+        <section class="container">
+          <div>
+            <h1>{{ product.title }}</h1>
+            <h1>{{ product.artist }}</h1>
+            <h4>{{ product.description }}</h4>
+
+            <div class="pasha-image">
+              <img
+                src="https://picsum.photos/280/320?random=4"
+                width="140"
+                height="160"
+              />
+            </div>
+          </div>
+
+          {% if cart == None %}
+          <form
+            action="/add-to-cart-refresh?item_id={{ product.id }}"
+            method="POST"
+          >
+            <button id="submit">Add to Cart</button>
+          </form>
+          {% else %}
+          <form
+            action="/add-to-cart-refresh?cart_id={{ cart.id }}&item_id={{ product.id }}"
+            method="POST"
+          >
+            <button id="submit">Add to Cart</button>
+          </form>
+          {% endif %}
+        </section>
+        {% endfor %}
+
+        <div id="error-message"></div>
+      </div>
+    </div>
+  </body>
+</html>
